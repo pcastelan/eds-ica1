@@ -8,7 +8,7 @@
 */
 int usuario=0;
 int nivel=0;
-FILE *fpaciente;
+FILE *fpaciente, *fagenda;
 
 typedef struct paciente{
 	char cpf[12];
@@ -23,20 +23,24 @@ int menus(int);
 int verificaCadastro(char*);
 void cadastro(Paciente);
 void salvaPaciente(Paciente);
+void entreMenus();
+void agenda();
 
 
 int main(){	
 	char cpf[11];
 	int opcao;
+	int i, j;
 	Paciente p1;	
-	usuario = menus(1);
+
 	
 
-	if (usuario == 3){
-		printf("%s\n", "O sistema está sendo encerrado");
-	}
 
 	while (usuario != 3){
+		usuario = menus(1);		
+		if (usuario == 3){
+			printf("%s\n", "O sistema está sendo encerrado");
+		}
 
 		while (usuario == 1){
 
@@ -44,7 +48,8 @@ int main(){
 				cadastro(p1);
 
 			} else {
-				printf("%s\n", "existe");
+				opcao = menus(2);
+				if(opcao)
 			}
 		}
 	}
@@ -63,18 +68,20 @@ int menus(int tipo){
 			return opcao();
 			break;
 		case 2:
-			printf("%s\n", "MENU PACIENTE\n1 - Agendar uma consulta\n2 - Exibir minhas consultas\n3 - Alterar dados cadastrais\n4 - Voltar ao menu Prinipal");
+			printf("%s\n", "MENU DO PACIENTE\n1 - Agendar uma consulta\n2 - Exibir minhas consultas\n3 - Alterar dados cadastrais\n4 - Voltar ao menu Prinipal");			
 			return opcao();
 			break;
 	}
 }
 
 int verificaCadastro(char cpf[]){
+	entreMenus();
 	printf("%s\n", "\nINSIRA SEU CPF");
 	scanf("%s", cpf);
 	strcat(cpf, ".txt");
 	if ((fpaciente = fopen(cpf, "r")) == NULL){
 		printf("%s\n", "CPF NÃO CADASTRADO NO SISTEMA");
+		entreMenus();
 		return 0;
 	} else{
 		return 1;
@@ -97,15 +104,32 @@ void cadastro(Paciente p){
 
 void salvaPaciente(Paciente p){
 	char aux[20]="";
-	printf("%s\n", "97");
 	strcat(aux, p.cpf);
 	strcat(aux, ".txt");
 	printf("%s\n", aux);
-	printf("%s\n", "99");
 	fpaciente = fopen(aux, "w");
-	printf("%s\n", "100");
 	fprintf(fpaciente, "\n%s\n%s\n%s\n%d\n", p.cpf, p.nome, p.telefone, p.tipo_consulta);
-	printf("%s\n", "101");
 	fclose(fpaciente);
+}
+
+void entreMenus(){
+	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n################################################\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+}
+
+void agenda(){
+	int i, j;
+	char horarios[6][9];
+
+	printf("%s\n", "MENU DO PACIENTE - Agenda");
+
+	if ((fagenda = fopen(cpf, "r+")) == NULL){
+		for (i = 0; i++, i<5){ 
+			for (j=0; j++; j<8){
+				horarios[i][j] = '-';
+				fprintf(fagenda, "%c\n", horarios);
+			}
+		}
+	}
+	
 	
 }
