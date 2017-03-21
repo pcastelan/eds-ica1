@@ -4,10 +4,10 @@
 	menus
 		+ 1 - menu principal
 		+ 2 - menu do paciente
-
 */
 int usuario=0;
 int nivel=0;
+char consultas[6][9];
 FILE *fpaciente, *fagenda;
 
 typedef struct paciente{
@@ -25,16 +25,16 @@ void cadastro(Paciente);
 void salvaPaciente(Paciente);
 void entreMenus();
 void agenda();
+void imprimeAgenda();
+void carregaConsultas();
+void alterarCadastro();
 
 
 int main(){	
 	char cpf[11];
 	int opcao;
 	int i, j;
-	Paciente p1;	
-
-	
-
+	Paciente p1;
 
 	while (usuario != 3){
 		usuario = menus(1);		
@@ -49,7 +49,10 @@ int main(){
 
 			} else {
 				opcao = menus(2);
-				if(opcao)
+				if (opcao == 1){
+					agenda();
+				}
+				
 			}
 		}
 	}
@@ -118,18 +121,44 @@ void entreMenus(){
 
 void agenda(){
 	int i, j;
-	char horarios[6][9];
+
+	
 
 	printf("%s\n", "MENU DO PACIENTE - Agenda");
 
-	if ((fagenda = fopen(cpf, "r+")) == NULL){
-		for (i = 0; i++, i<5){ 
-			for (j=0; j++; j<8){
-				horarios[i][j] = '-';
-				fprintf(fagenda, "%c\n", horarios);
+	if ((fagenda = fopen("agenda.txt", "r+")) == NULL){
+		fagenda = fopen("agenda.txt", "a+");
+		fprintf(fagenda, "\n" );
+		for (i= 0; i<5; i++){ 
+			for (j=0; j<8; j++){
+				consultas[i][j] = '-';
+				fprintf(fagenda, "%c", consultas[i][j]);
 			}
 		}
+		fclose(fagenda);
+			imprimeAgenda();
+	} else {
+		carregaConsultas();	
+		imprimeAgenda();
 	}
 	
-	
+}
+
+void imprimeAgenda(){
+	int i;
+	int hora[8] = {8,9,10,11,13,14,15,16};
+	printf("\t\t \t | \t SEG \t | \t TER \t | \t QUA \t | \t QUI \t | \t SEX \t |\n");
+	for(i=0; i<8; i++){
+		printf("%dh \t\t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t |\n", hora[i], consultas[0][i], consultas[1][i], consultas[2][i],consultas[3][i], consultas[4][i]);
+	}
+
+}
+
+void carregaConsultas(){
+	//TODO: função que popula a matriz consultas a partir do arquivo agenda.txt
+}
+
+
+void alterarCadastro(){
+	//TODO: função que permite que o usuário altere seus dados cadastrais
 }
