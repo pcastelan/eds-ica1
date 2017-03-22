@@ -9,6 +9,7 @@ int usuario=0;
 int nivel=0;
 char consultas[6][9];
 FILE *fpaciente, *fagenda;
+char pacienteLogado[12];
 
 typedef struct paciente{
 	char cpf[12];
@@ -28,6 +29,8 @@ void agenda();
 void imprimeAgenda();
 void carregaConsultas();
 void alterarCadastro();
+void marcaConsulta();
+Paciente carregaDados(char[]);
 
 
 int main(){	
@@ -87,6 +90,7 @@ int verificaCadastro(char cpf[]){
 		entreMenus();
 		return 0;
 	} else{
+		strcpy(pacienteLogado, cpf);
 		return 1;
 	}
 }
@@ -113,6 +117,7 @@ void salvaPaciente(Paciente p){
 	fpaciente = fopen(aux, "w");
 	fprintf(fpaciente, "\n%s\n%s\n%s\n%d\n", p.cpf, p.nome, p.telefone, p.tipo_consulta);
 	fclose(fpaciente);
+	strcpy(pacienteLogado, p.cpf);
 }
 
 void entreMenus(){
@@ -121,27 +126,24 @@ void entreMenus(){
 
 void agenda(){
 	int i, j;
-
-	
-
 	printf("%s\n", "MENU DO PACIENTE - Agenda");
 
 	if ((fagenda = fopen("agenda.txt", "r+")) == NULL){
 		fagenda = fopen("agenda.txt", "a+");
-		fprintf(fagenda, "\n" );
+		
 		for (i= 0; i<5; i++){ 
+			fprintf(fagenda, "\n" );
 			for (j=0; j<8; j++){
 				consultas[i][j] = '-';
-				fprintf(fagenda, "%c", consultas[i][j]);
+				fprintf(fagenda, "%c ", consultas[i][j]);
 			}
 		}
 		fclose(fagenda);
-			imprimeAgenda();
+		imprimeAgenda();
 	} else {
 		carregaConsultas();	
 		imprimeAgenda();
-	}
-	
+	}	
 }
 
 void imprimeAgenda(){
@@ -156,9 +158,36 @@ void imprimeAgenda(){
 
 void carregaConsultas(){
 	//TODO: função que popula a matriz consultas a partir do arquivo agenda.txt
+	int i,j;
+	char aux;
+	fagenda = fopen("agenda.txt", "r");
+	for(i=0;i<5;i++){
+			fscanf(fagenda, "\n");
+		for (j=0; j<8; j++){
+			fscanf(fagenda, "%c ", &consultas[i][j]);
+		}
+	}
+	fclose(fagenda);
 }
 
 
 void alterarCadastro(){
 	//TODO: função que permite que o usuário altere seus dados cadastrais
+	Paciente aux;
+	entreMenus();
+	printf("MENU DO PACIENTE - Alterar Cadastro\n");
+	aux = carregaDados(pacienteLogado);
+}
+
+void marcaConsulta(){
+	//TODO funcao que marca consulta
+}
+
+Paciente carregaDados(char cpf[]){
+	//TODO funcao retorna os dados de um paciente;
+	Paciente aux;
+	char filename[];
+	strcat(filename, cpf);
+	strcat(filename, ".txt");
+	fpaciente = fopen()
 }
