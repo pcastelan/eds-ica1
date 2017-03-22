@@ -1,12 +1,11 @@
 #include <stdio.h>
 #include <string.h>
-/* 
+/*
 	menus
 		+ 1 - menu principal
 		+ 2 - menu do paciente
 */
 
-//TODO: funçao agenda só imprime no agenda.txt
 int usuario=0;
 int nivel=0;
 char consultas[6][9];
@@ -20,11 +19,6 @@ typedef struct paciente{
 	int tipo_consulta;
 }Paciente;
 
-typedef struct pacienteConsulta{
-	char dia[4];
-	int horario;
-	char cpf[12];	
-}Sconsulta;
 
 void agenda();
 void alterarCadastro();
@@ -39,16 +33,17 @@ int opcao();
 void salvaPaciente(Paciente);
 int verificaCadastro(char*);
 void salvaAgenda();
+void pacienteConsulta();
 
 
-int main(){	
+int main(){
 	char cpf[11];
 	int opcao;
 	int i, j;
 	Paciente p1;
 
 	while (usuario != 3){
-		usuario = menus(1);		
+		usuario = menus(1);
 		if (usuario == 3){
 			printf("%s\n", "O sistema está sendo encerrado");
 		}
@@ -62,19 +57,22 @@ int main(){
 				}
 				if(opcao == 3){
 					alterarCadastro();
-				}				
+				}
+				if(opcao == 2){
+
+				}
 				if(opcao == 4){
 					usuario = 0;
 					entreMenus();
 				}
-			} else {				
+			} else {
 				if(verificaCadastro(cpf) == 0){
 					cadastro(p1);
-				} 
+				}
 			}
 		}
 	}
-	
+
 	return 0;
 }
 int opcao(){
@@ -89,7 +87,7 @@ int menus(int tipo){
 			return opcao();
 			break;
 		case 2:
-			printf("%s\n", "MENU DO PACIENTE\n1 - Agendar uma consulta\n2 - Exibir minhas consultas\n3 - Alterar dados cadastrais\n4 - Voltar ao menu Prinipal");			
+			printf("%s\n", "MENU DO PACIENTE\n1 - Agendar uma consulta\n2 - Exibir minhas consultas\n3 - Alterar dados cadastrais\n4 - Voltar ao menu Prinipal");
 			return opcao();
 			break;
 	}
@@ -100,9 +98,9 @@ int verificaCadastro(char cpf[]){
 	entreMenus();
 	printf("%s\n", "\nINSIRA SEU CPF");
 	scanf("%s", cpf);
-	strcpy(aux, cpf);	
+	strcpy(aux, cpf);
 	strcat(aux, ".txt");
-	
+
 	if ((fpaciente = fopen(aux, "r"))==NULL){
 		printf("%s\n", "CPF NÃO CADASTRADO NO SISTEMA");
 		entreMenus();
@@ -151,7 +149,7 @@ void agenda(){
 	printf("%s\n", "MENU DO PACIENTE - Agenda");
 	if ((fagenda = fopen("agenda.txt", "r")) == NULL){
 		fagenda = fopen("agenda.txt", "a+");
-		for (i= 0; i<5; i++){ 
+		for (i= 0; i<5; i++){
 			fprintf(fagenda, "\n" );
 			for (j=0; j<8; j++){
 				consultas[i][j] = '-';
@@ -159,21 +157,43 @@ void agenda(){
 			}
 		}
 		fclose(fagenda);
-		imprimeAgenda();
 	} else {
-		carregaConsultas();	
-		imprimeAgenda();
-	}	
+		fagenda = fopen("agenda.txt", "w");
+		for(i=0; i<5; i++){
+			fprintf(fagenda, "\n");
+			for(j=0; j<8; j++){
+				fprintf(fagenda, "%c ", consultas[i][j]);
+			}
+		}
+		fclose(fagenda);
+	}
 }
 
-void imprimeAgenda(){
+void imprimeAgenda(int tipo){
 	int i;
+
+    if(tipo == 2){
+        char aux[20];
+        strcpy(aux, "");
+        strcat(aux, pacienteLogado);
+        strcat(aux, "_c.txt");
+        fagenda = fopen(aux, "r");
+        if (fpconsulta == NULL){
+            printf("Você não tem consultas agendadas");
+        } else {
+            while !(feof(fagenda)){
+                // consulta na posicao do fpconsulta recebe "O"
+            }
+        }
+    }
 	int hora[8] = {8,9,10,11,13,14,15,16};
 	printf("\t \t | \t SEG \t | \t TER \t | \t QUA \t | \t QUI \t | \t SEX \t |\n");
 	for(i=0; i<8; i++){
 		printf("%dh \t\t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t |\n", hora[i], consultas[0][i], consultas[1][i], consultas[2][i],consultas[3][i], consultas[4][i]);
 	}
 	printf("%s\n", "[-] - Horarios livres\n[X] - Horarios ocupados");
+
+
 }
 
 void carregaConsultas(){
@@ -192,7 +212,6 @@ void carregaConsultas(){
 
 
 void alterarCadastro(){
-	//TODO: função que permite que o usuário altere seus dados cadastrais
 	Paciente aux;
 	int opcao;
 	entreMenus();
@@ -206,7 +225,6 @@ void alterarCadastro(){
 	}
 	switch(opcao){
 		case 1:
-			// TODO: se o cpf for diferente do anterior tem que criar um arquivo novo 
 			break;
 		case 2:
 			printf("Seu NOME atual é: %s\nInsira o novo NOME", aux.nome);
@@ -219,7 +237,6 @@ void alterarCadastro(){
 			scanf("%s", aux.telefone);
 			break;
 		case 4:
-			//TODO: mudar tipo de consulta
 			break;
 	}
 	salvaPaciente(aux);
@@ -248,23 +265,23 @@ void marcaConsulta(){
 	}
 
 	if ((strcmp(horario, "8")) == 0 ){
-		j = 0
+		j = 0;
 	} else if ((strcmp(horario, "9")) == 0 ){
-		j = 1
+		j = 1;
 	} else if ((strcmp(horario, "10")) == 0 ){
-		j = 2
+		j = 2;
 	} else if ((strcmp(horario, "11")) == 0 ){
-		j = 3
+		j = 3;
 	} else if ((strcmp(horario, "12")) == 0 ){
-		j = 4
+		j = 4;
 	} else if ((strcmp(horario, "14")) == 0 ){
-		j = 5
+		j = 5;
 	} else if ((strcmp(horario, "15")) == 0 ){
-		j = 6
+		j = 6;
 	} else if ((strcmp(horario, "16")) == 0 ){
-		j = 7
+		j = 7;
 	}
-	if(consultas[i][j] == 'X'){		
+	if(consultas[i][j] == 'X'){
 		strcpy(aux, pacienteLogado);
 		strcat(aux, "_c.txt");
 		fpconsulta=fopen(aux, "a");
@@ -291,6 +308,11 @@ Paciente carregaDados(char cpf[]){
 	fscanf(fpaciente, "\n%s\n%s\n%s\n%d\n", aux.cpf, aux.nome, aux.telefone, &aux.tipo_consulta);
 	fclose(fpaciente);
 	return aux;
+}
+
+
+void pacienteConsulta(){
+
 }
 
 
