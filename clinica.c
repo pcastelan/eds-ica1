@@ -5,10 +5,12 @@
 		+ 1 - menu principal
 		+ 2 - menu do paciente
 */
+
+//TODO: funçao agenda só imprime no agenda.txt
 int usuario=0;
 int nivel=0;
 char consultas[6][9];
-FILE *fpaciente, *fagenda;
+FILE *fpaciente, *fagenda, *fpconsulta;
 char pacienteLogado[12];
 
 typedef struct paciente{
@@ -18,19 +20,25 @@ typedef struct paciente{
 	int tipo_consulta;
 }Paciente;
 
+typedef struct pacienteConsulta{
+	char dia[4];
+	int horario;
+	char cpf[12];	
+}Sconsulta;
 
-int opcao();
-int menus(int);
-int verificaCadastro(char*);
-void cadastro(Paciente);
-void salvaPaciente(Paciente);
-void entreMenus();
 void agenda();
-void imprimeAgenda();
-void carregaConsultas();
 void alterarCadastro();
-void marcaConsulta();
+void cadastro(Paciente);
 Paciente carregaDados(char[]);
+void carregaConsultas();
+void entreMenus();
+void imprimeAgenda();
+void marcaConsulta();
+int menus(int);
+int opcao();
+void salvaPaciente(Paciente);
+int verificaCadastro(char*);
+void salvaAgenda();
 
 
 int main(){	
@@ -161,11 +169,11 @@ void agenda(){
 void imprimeAgenda(){
 	int i;
 	int hora[8] = {8,9,10,11,13,14,15,16};
-	printf("\t\t \t | \t SEG \t | \t TER \t | \t QUA \t | \t QUI \t | \t SEX \t |\n");
+	printf("\t \t | \t SEG \t | \t TER \t | \t QUA \t | \t QUI \t | \t SEX \t |\n");
 	for(i=0; i<8; i++){
 		printf("%dh \t\t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t |\n", hora[i], consultas[0][i], consultas[1][i], consultas[2][i],consultas[3][i], consultas[4][i]);
 	}
-
+	printf("%s\n", "[-] - Horarios livres\n[X] - Horarios ocupados");
 }
 
 void carregaConsultas(){
@@ -218,14 +226,58 @@ void alterarCadastro(){
 }
 
 void marcaConsulta(){
-	//TODO: funcao que marca consulta
 	char dia[4], horario[3];
+	int i,j;
+	char aux[20];
 	carregaConsultas();
 	imprimeAgenda();
 	printf("\n\nDia: ");
 	scanf("%s", dia);
 	printf("\n\nHorario: ");
-	scanf("%s", horario);	
+	scanf("%s", horario);
+	if ((strcmp(dia, "SEG")) == 0|| (strcmp(dia, "seg")) == 0){
+		i = 0;
+	} else if((strcmp(dia, "TER")) == 0 || (strcmp(dia, "ter")) == 0){
+		i = 1;
+	} else if((strcmp(dia, "QUA")) == 0 || (strcmp(dia, "qua")) == 0){
+		i = 2;
+	} else if((strcmp(dia, "QUI")) == 0 || (strcmp(dia, "qui")) == 0){
+		i = 3;
+	} else if((strcmp(dia, "SEX")) == 0 || (strcmp(dia, "sex")) == 0){
+		i = 4;
+	}
+
+	if ((strcmp(horario, "8")) == 0 ){
+		j = 0
+	} else if ((strcmp(horario, "9")) == 0 ){
+		j = 1
+	} else if ((strcmp(horario, "10")) == 0 ){
+		j = 2
+	} else if ((strcmp(horario, "11")) == 0 ){
+		j = 3
+	} else if ((strcmp(horario, "12")) == 0 ){
+		j = 4
+	} else if ((strcmp(horario, "14")) == 0 ){
+		j = 5
+	} else if ((strcmp(horario, "15")) == 0 ){
+		j = 6
+	} else if ((strcmp(horario, "16")) == 0 ){
+		j = 7
+	}
+	if(consultas[i][j] == 'X'){		
+		strcpy(aux, pacienteLogado);
+		strcat(aux, "_c.txt");
+		fpconsulta=fopen(aux, "a");
+		fprintf(fpconsulta, "%c %c\n", i, j);
+		fclose(fpconsulta);
+		consultas[i][j] = 'X';
+		//TODO salva esse x em agenda.txt
+	} else {
+		printf("DATA OCUPADA, escolha novamente\n");
+		entreMenus();
+		marcaConsulta();
+	}
+
 }
 
 /*funcao retorna os dados de um paciente;	*/
@@ -240,3 +292,5 @@ Paciente carregaDados(char cpf[]){
 	fclose(fpaciente);
 	return aux;
 }
+
+
