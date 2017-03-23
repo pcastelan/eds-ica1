@@ -26,14 +26,13 @@ void cadastro(Paciente);
 Paciente carregaDados(char[]);
 void carregaConsultas();
 void entreMenus();
-void imprimeAgenda();
+void imprimeAgenda(int);
 void marcaConsulta();
 int menus(int);
 int opcao();
+void salvaAgenda();
 void salvaPaciente(Paciente);
 int verificaCadastro(char*);
-void salvaAgenda();
-void pacienteConsulta();
 
 
 int main(){
@@ -53,7 +52,7 @@ int main(){
 			if(nivel != 0){
 				opcao = menus(2);
 				if (opcao == 1){
-					agenda();
+					marcaConsulta();
 				}
 				if(opcao == 3){
 					alterarCadastro();
@@ -72,7 +71,6 @@ int main(){
 			}
 		}
 	}
-
 	return 0;
 }
 int opcao(){
@@ -144,11 +142,55 @@ void entreMenus(){
 	printf("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n################################################\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
 }
 
+
 void agenda(){
-	int i, j;
-	printf("%s\n", "MENU DO PACIENTE - Agenda");
-	if ((fagenda = fopen("agenda.txt", "r")) == NULL){
-		fagenda = fopen("agenda.txt", "a+");
+	int i, j;	
+		fagenda = fopen("agenda.txt", "w");
+		for(i=0; i<5; i++){
+			fprintf(fagenda, "\n");
+			for(j=0; j<8; j++){
+				fprintf(fagenda, "%c ", consultas[i][j]);
+			}
+		}
+		fclose(fagenda);
+	
+}
+
+void imprimeAgenda(int tipo){
+	int i;
+		printf("%s\n", "MENU DO PACIENTE - Agenda\n");
+
+		// se tipo= 2 imprime o agendado pelo paciente logado
+    if(tipo == 2){
+        char aux[20];
+        strcpy(aux, "");
+        strcat(aux, pacienteLogado);
+        strcat(aux, "_c.txt");
+        fpconsulta = fopen(aux, "r");
+        if (fpconsulta == NULL){
+            printf("Você não tem consultas agendadas");
+        } else {
+            while (!(feof(fagenda))){
+                // consulta na posicao do fpconsulta recebe "O"
+            }
+        }
+    }
+
+	int hora[8] = {8,9,10,11,13,14,15,16};
+	printf("\t \t | \t SEG \t | \t TER \t | \t QUA \t | \t QUI \t | \t SEX \t |\n");
+	for(i=0; i<8; i++){
+		printf("%dh \t\t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t |\n", hora[i], consultas[0][i], consultas[1][i], consultas[2][i],consultas[3][i], consultas[4][i]);
+	}
+	printf("%s\n", "[-] - Horarios livres\n[X] - Horarios ocupados");
+}
+
+/* carrega a matriz consultas a partir de agenda.txt*/
+void carregaConsultas(){
+	int i,j;
+	char aux;
+	fagenda = fopen("agenda.txt", "r");
+	if(fagenda == NULL){
+
 		for (i= 0; i<5; i++){
 			fprintf(fagenda, "\n" );
 			for (j=0; j<8; j++){
@@ -158,59 +200,17 @@ void agenda(){
 		}
 		fclose(fagenda);
 	} else {
-		fagenda = fopen("agenda.txt", "w");
-		for(i=0; i<5; i++){
-			fprintf(fagenda, "\n");
-			for(j=0; j<8; j++){
-				fprintf(fagenda, "%c ", consultas[i][j]);
+		for(i=0;i<5;i++){
+				fscanf(fagenda, "\n");
+			for (j=0; j<8; j++){
+				fscanf(fagenda, "%c ", &consultas[i][j]);
 			}
-		}
-		fclose(fagenda);
-	}
-}
-
-void imprimeAgenda(int tipo){
-	int i;
-
-    if(tipo == 2){
-        char aux[20];
-        strcpy(aux, "");
-        strcat(aux, pacienteLogado);
-        strcat(aux, "_c.txt");
-        fagenda = fopen(aux, "r");
-        if (fpconsulta == NULL){
-            printf("Você não tem consultas agendadas");
-        } else {
-            while !(feof(fagenda)){
-                // consulta na posicao do fpconsulta recebe "O"
-            }
-        }
-    }
-	int hora[8] = {8,9,10,11,13,14,15,16};
-	printf("\t \t | \t SEG \t | \t TER \t | \t QUA \t | \t QUI \t | \t SEX \t |\n");
-	for(i=0; i<8; i++){
-		printf("%dh \t\t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t | \t  %c  \t |\n", hora[i], consultas[0][i], consultas[1][i], consultas[2][i],consultas[3][i], consultas[4][i]);
-	}
-	printf("%s\n", "[-] - Horarios livres\n[X] - Horarios ocupados");
-
-
-}
-
-void carregaConsultas(){
-	//TODO: função que popula a matriz consultas a partir do arquivo agenda.txt
-	int i,j;
-	char aux;
-	fagenda = fopen("agenda.txt", "r");
-	for(i=0;i<5;i++){
-			fscanf(fagenda, "\n");
-		for (j=0; j<8; j++){
-			fscanf(fagenda, "%c ", &consultas[i][j]);
 		}
 	}
 	fclose(fagenda);
 }
 
-
+/* altera os dados do cadastro do paciente*/
 void alterarCadastro(){
 	Paciente aux;
 	int opcao;
@@ -225,14 +225,35 @@ void alterarCadastro(){
 	}
 	switch(opcao){
 		case 1:
+			printf("Seu CPF atual é: %s\n", aux.cpf);
+			if (!(strcmp(aux.cpf, pacienteLogado))){
+				salvaPaciente(aux);
+				char auxp[20];
+				int i, j;
+				strcpy(auxp, "");
+				strcat(auxp, pacienteLogado);
+				strcat(auxp, "_c.txt");
+				fpconsulta=fopen(auxp, "r");
+				strcpy(auxp, "");
+				strcat(auxp, aux.cpf);
+				strcat(auxp, "_c.txt");
+				fagenda=fopen(auxp, "w");
+				while(!(feof(fpconsulta))){
+					fscanf(fpconsulta, "%d %d\n", &i, &j);
+					fprintf(fagenda, "%d %d\n", i, j);
+				}
+				fclose(fpconsulta);
+				fclose(fagenda);
+				strcpy(pacienteLogado, aux.cpf);
+			}
 			break;
 		case 2:
-			printf("Seu NOME atual é: %s\nInsira o novo NOME", aux.nome);
+			printf("Seu NOME atual é: %s\nInsira o novo NOME: ", aux.nome);
 			strcpy(aux.nome, "");
 			scanf("%s", aux.nome);
 			break;
 		case 3:
-			printf("Seu TELEFONE atual é: %s\nInsira o novo TELEFONE", aux.telefone);
+			printf("Seu TELEFONE atual é: %s\nInsira o novo TELEFONE: ", aux.telefone);
 			strcpy(aux.telefone, "");
 			scanf("%s", aux.telefone);
 			break;
@@ -242,12 +263,13 @@ void alterarCadastro(){
 	salvaPaciente(aux);
 }
 
+/*paciente marca consulta*/
 void marcaConsulta(){
 	char dia[4], horario[3];
 	int i,j;
 	char aux[20];
 	carregaConsultas();
-	imprimeAgenda();
+	imprimeAgenda(1);
 	printf("\n\nDia: ");
 	scanf("%s", dia);
 	printf("\n\nHorario: ");
@@ -281,14 +303,14 @@ void marcaConsulta(){
 	} else if ((strcmp(horario, "16")) == 0 ){
 		j = 7;
 	}
-	if(consultas[i][j] == 'X'){
+	if(consultas[i][j] == '-'){
 		strcpy(aux, pacienteLogado);
 		strcat(aux, "_c.txt");
 		fpconsulta=fopen(aux, "a");
-		fprintf(fpconsulta, "%c %c\n", i, j);
+		fprintf(fpconsulta, "%d %d\n", i, j);
 		fclose(fpconsulta);
 		consultas[i][j] = 'X';
-		//TODO salva esse x em agenda.txt
+		agenda();
 	} else {
 		printf("DATA OCUPADA, escolha novamente\n");
 		entreMenus();
@@ -311,8 +333,5 @@ Paciente carregaDados(char cpf[]){
 }
 
 
-void pacienteConsulta(){
-
-}
 
 
