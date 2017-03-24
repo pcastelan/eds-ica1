@@ -25,6 +25,7 @@ void carregaP_consultas();
 int conv_dia(char[]);
 int conv_horario(char[]);
 void entreMenus();
+void exibirConsultas();
 void imprimeAgenda(int);
 void marcaConsulta();
 int menus(int);
@@ -56,7 +57,7 @@ int main(){
 					alterarCadastro();
 				}
 				if(opcao == 2){
-
+					exibirConsultas();
 				}
 				if(opcao == 4){
 					usuario = 0;
@@ -250,8 +251,16 @@ void imprimeAgenda(int tipo){
       if (fpconsulta == NULL){
           printf("Você não tem consultas agendadas");
       } else {
-         // for()
-              // consulta na posicao do fpconsulta recebe "O"
+      	carregaConsultas(0);
+      	carregaP_consultas();
+				for(i=0; i<20; i++){
+
+					consultas[paciente_consultas[i][0]][paciente_consultas[i][1]] = 'O';
+				}
+				carregaConsultas(1);
+
+         
+         
 
 
           
@@ -374,9 +383,35 @@ void exibirConsultas(){
 
 void carregaP_consultas(){
 	char aux[20]="";
+	int i=0, auxi, auxj;
 	strcat(aux, pacienteLogado);
 	strcat(aux, "_c.txt");
 	fpconsulta = fopen(aux, "r");
 	//carrega no vetor o conteudo do arquivo de consultas do paciente
+	while(!(feof(fagenda))){
+		fscanf(fagenda, "%d %d", &auxi, &auxj);
+		paciente_consultas[i][0] = auxi;
+		paciente_consultas[i][1] = auxj;
+		i++;
+	}
+	paciente_consultas[i][0] = 11;
+	paciente_consultas[i][1] = 11;
 
 }
+
+
+// void gravaP_consultas(){
+// 		char aux[20]="";
+// 	int i=0;
+// 	strcat(aux, pacienteLogado);
+// 	strcat(aux, "_c.txt");
+// 	fpconsulta = fopen(aux, "r");
+// 	//carrega no vetor o conteudo do arquivo de consultas do paciente
+// 	while(!(feof(agenda))){
+// 		fscanf(fagenda, "%d %d", &paciente_consultas[i][0], &paciente_consultas[i][1]);
+// 		i++;
+// 	}
+// 	paciente_consultas[i][0] = 11;
+// 	paciente_consultas[i][1] = 11;
+
+// }
