@@ -6,6 +6,8 @@ int nivel=0; //´para controle dos acessos dentro dos menus
 char consultas[6][9]; // armazena as consultas 
 FILE *fpaciente, *fagenda, *fpconsulta;
 char pacienteLogado[12]; //cpf do paciente logado
+char paciente_consultas[20][2]; //consultas do paciente logado
+
 
 typedef struct paciente{
 	char cpf[12];
@@ -18,7 +20,8 @@ void agenda();
 void alterarCadastro();
 void cadastro(Paciente);
 Paciente carregaDados(char[]);
-void carregaConsultas();
+void carregaConsultas(int);
+void carregaP_consultas();
 int conv_dia(char[]);
 int conv_horario(char[]);
 void entreMenus();
@@ -34,7 +37,9 @@ int main(){
 	int opcao;
 	int i, j;
 	Paciente p1;
-
+	if((fagenda = fopen("agenda.txt", "r"))==NULL){
+		carregaConsultas(1);
+	}
 	while (usuario != 3){
 		usuario = menus(1);
 		if (usuario == 3){
@@ -81,6 +86,7 @@ void agenda(){
 	}
 	fclose(fagenda);
 }
+
 
 
 /* 
@@ -154,11 +160,13 @@ Paciente carregaDados(char cpf[]){
 /* 
 	DESCRICAO: carrega a matriz consultas a partir de agenda.txt
 */
-void carregaConsultas(){
+void carregaConsultas(int tipo){
 	int i,j;
 	char aux;
-	fagenda = fopen("agenda.txt", "r");
-	if(fagenda == NULL){
+	printf("161");
+	
+	if(tipo){
+		fagenda = fopen("agenda.txt", "w");
 		for (i= 0; i<5; i++){
 			fprintf(fagenda, "\n" );
 			for (j=0; j<8; j++){
@@ -168,14 +176,16 @@ void carregaConsultas(){
 		}
 		fclose(fagenda);
 	} else {
+		fagenda = fopen("agenda.txt", "r");
 		for(i=0;i<5;i++){
 				fscanf(fagenda, "\n");
 			for (j=0; j<8; j++){
 				fscanf(fagenda, "%c ", &consultas[i][j]);
 			}
 		}
+		fclose(fagenda);
 	}
-	fclose(fagenda);
+	
 }
 
 int conv_dia(char dia[]){
@@ -240,9 +250,11 @@ void imprimeAgenda(int tipo){
       if (fpconsulta == NULL){
           printf("Você não tem consultas agendadas");
       } else {
-          while (!(feof(fagenda))){
+         // for()
               // consulta na posicao do fpconsulta recebe "O"
-          }
+
+
+          
       }
   }
 	int hora[8] = {8,9,10,11,13,14,15,16};
@@ -261,8 +273,10 @@ void marcaConsulta(){
 	char dia[4], horario[3];
 	int i,j;
 	char aux[20];
-	carregaConsultas();
+	carregaConsultas(0);
+	printf("269");
 	imprimeAgenda(1);
+	printf("271");
 	printf("\n\nDia: ");
 	scanf("%s", dia);
 	printf("\n\nHorario: ");
@@ -347,4 +361,22 @@ int verificaCadastro(char cpf[]){
 		return 1;
 	}
 	fclose(fpaciente);
+}
+
+
+/*
+	DESCRICAO: funcao do menu exibir consultas
+*/
+void exibirConsultas(){
+	imprimeAgenda(2);
+
+}
+
+void carregaP_consultas(){
+	char aux[20]="";
+	strcat(aux, pacienteLogado);
+	strcat(aux, "_c.txt");
+	fpconsulta = fopen(aux, "r");
+	//carrega no vetor o conteudo do arquivo de consultas do paciente
+
 }
